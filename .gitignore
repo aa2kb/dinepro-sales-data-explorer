@@ -1,0 +1,26 @@
+
+#node_modules
+node_modules
+
+#main serverless directories generated for sls deploy
+.serverless
+
+#vscode workspace settings
+.vscode
+
+# app secret configs
+config.yml
+
+#testing area
+test/
+
+
+#logs 
+logs/
+
+.DS_Store
+
+tmp
+
+secrets.json
+.env

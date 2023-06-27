@@ -28,8 +28,10 @@ console.log("Starting...");
     // await mongoose.connect(process.env.MONGO_URL);
     // console.log('MongoDB Connected!');
 
-    await addKeyOnClickup();
+    for (let index = 1; index < 10; index++) {
+        await addKeyOnClickup(index);
 
+    }
 
 })();
 
@@ -48,18 +50,39 @@ async function pushDataToClickup() {
     process.exit();
 }
 
-async function addKeyOnClickup() {
+async function addKeyOnClickup(page) {
+    console.log(`https://api.clickup.com/api/v2/list/900901682805/task?custom_fields=[{"field_id":"5c1c840b-4519-4f67-8cc5-ca65f93d16a2","operator":"IS NULL"}]&page=${page}`);
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://api.clickup.com/api/v2/list/900901682805/task?custom_fields=[{"field_id":"5c1c840b-4519-4f67-8cc5-ca65f93d16a2","operator":"IS NULL"}]',
+        url: `https://api.clickup.com/api/v2/list/900901682805/task?custom_fields=[{"field_id":"5c1c840b-4519-4f67-8cc5-ca65f93d16a2","operator":"IS NULL"}]&page=${page}`,
         headers: {
             'Authorization': 'pk_3824578_W8120ODZT007T4DX6AC4NXROZXN4ET1S'
         }
     };
 
-    const data = await axios.request(config);
-    console.log(data);
+    const { data } = await axios.request(config);
+    for (const i in data.tasks) {
+        const item = data.tasks[i];
+
+        console.log(`${i}-${data.tasks.length} > ${item.name}`);
+
+        const clickupData = {
+            "value": `https://www.google.ae/search?q=${item.name} UAE`
+        }
+
+        let updateConfig = {
+            method: 'POST',
+            url: `https://api.clickup.com/api/v2/task/${item.id}/field/5c1c840b-4519-4f67-8cc5-ca65f93d16a2`,
+            headers: {
+                'Authorization': 'pk_3824578_W8120ODZT007T4DX6AC4NXROZXN4ET1S',
+                'Content-Type': 'application/json'
+            },
+            data: clickupData
+        };
+
+        const update = await axios.request(updateConfig);
+    }
 
 }
 
